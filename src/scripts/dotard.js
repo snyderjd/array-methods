@@ -248,4 +248,5 @@ const sentence = words.reduce((acc, currentValue) => {
     return `${acc} ${currentValue}`;
 });
 
-console.log(sentence);
+// console.log(sentence);
+
