@@ -38,7 +38,6 @@ getSalesData().then(parsedSales => {
     });
     
     const totalGrossProfit = Math.round(grossProfits.reduce((acc, current) => acc + current));
-    console.log(totalGrossProfit);
     
     const grossProfitHTML = createHTML('2017 Gross Profit', totalGrossProfit);
     renderHTML(reportContainer, grossProfitHTML);
@@ -46,6 +45,52 @@ getSalesData().then(parsedSales => {
 
 // Figure out which month had the most sales and add it to the DOM
 getSalesData().then(parsedSales => {
-    
+    const sales2017 = parsedSales.filter(sale => sale.purchase_date.includes('2017'));
+
+    // Create an array of all sale dates using map
+    saleDates = sales2017.map(sale => sale.purchase_date);
+
+    // Iterate through the array of dates and use the below object to count the sales in each month
+    const saleMonths = {
+        '2017-01': 0,
+        '2017-02': 0,
+        '2017-03': 0,
+        '2017-04': 0,
+        '2017-05': 0,
+        '2017-06': 0,
+        '2017-07': 0,
+        '2017-08': 0,
+        '2017-09': 0,
+        '2017-10': 0,
+        '2017-11': 0,
+        '2017-12': 0
+    };
+
+    saleDates.forEach(date => {
+        for (let key in saleMonths) {
+            if (date.includes(key)) {
+                saleMonths[key] += 1;
+            }
+        }
+    });
+
+    // Iterate through the object of months and check to see which month had the most sales
+    let bestMonth = '2017-01';
+    let currMax = saleMonths['2017-01'];
+
+    for (let key in saleMonths) {
+
+        if (saleMonths[key] > currMax) {
+            bestMonth = key;
+            currMax = saleMonths[key];
+        } else if (saleMonths[key] >= currMax) {
+            bestMonth += ` and ${key}`;
+        }
+        
+    }
+
+    // Create HTML representation and add it to the DOM
+    const bestMonthHTML = createHTML('Best Month', bestMonth);
+    renderHTML(reportContainer, bestMonthHTML);
 });
 
