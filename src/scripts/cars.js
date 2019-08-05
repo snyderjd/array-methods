@@ -110,7 +110,7 @@ getSalesData().then(parsedSales => {
 
     salespersons.forEach(agent => saleCounter[agent] += 1);
 
-    console.log(saleCounter);
+    // console.log(saleCounter);
 
     // Iterate through the object and get the max value
     let topAgent = '';
@@ -128,5 +128,46 @@ getSalesData().then(parsedSales => {
     // Create HTML representation and add it to the DOM
     const topAgentHTML = createHTML('Top Agent', topAgent);
     renderHTML(reportContainer, topAgentHTML);
+});
+
+// Figure out which salesperson made the most profit
+getSalesData().then(parsedSales => {
+    const sales2017 = parsedSales.filter(sale => sale.purchase_date.includes('2017'));
+
+    console.log(sales2017);
+
+    const agentProfits = {};
+
+    // Loop through the sales to create an object key for each salesperson and set equal to 0
+    sales2017.forEach(sale => {
+        const agent = `${sale.sales_agent.first_name} ${sale.sales_agent.last_name}`;
+
+        agentProfits[agent] = 0;
+    });
+
+    // Loop through the sales to add gross profit to the appropriate agent in the agentProfits object
+    sales2017.forEach(sale => {
+        const agent = `${sale.sales_agent.first_name} ${sale.sales_agent.last_name}`;
+        agentProfits[agent] += sale.gross_profit;
+    });
+
+    console.log(agentProfits);
+
+    // Iterate through the object and get the max value
+    let mostProfitable = '';
+    let currMax = 0;
+
+    for (let agent in agentProfits) {
+        if (agentProfits[agent] > currMax) {
+            mostProfitable = agent;
+            currMax = agentProfits[agent];
+        } else if (agentProfits[agent] >= currMax) {
+            currMax += ` and ${key}`;
+        }
+    }
+
+    // Create HTML representation and add it to the DOM
+    const mostProfitsHTML = createHTML('Most Profitable Agent', mostProfitable);
+    renderHTML(reportContainer, mostProfitsHTML);    
 });
 
