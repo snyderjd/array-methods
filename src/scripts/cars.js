@@ -94,3 +94,39 @@ getSalesData().then(parsedSales => {
     renderHTML(reportContainer, bestMonthHTML);
 });
 
+// Figure out which salesperson sold the most cars
+getSalesData().then(parsedSales => {
+    const sales2017 = parsedSales.filter(sale => sale.purchase_date.includes('2017'));
+
+    // Get an array of the salesperson for each sale
+    const salespersons = sales2017.map(sale => {
+        return `${sale.sales_agent.first_name} ${sale.sales_agent.last_name}`;
+    });
+
+    // Create an object to keep track of how many cars each salesperson sold
+    const saleCounter = {};
+
+    salespersons.forEach(agent => saleCounter[agent] = 0);
+
+    salespersons.forEach(agent => saleCounter[agent] += 1);
+
+    console.log(saleCounter);
+
+    // Iterate through the object and get the max value
+    let topAgent = '';
+    let currMax = 0;
+
+    for (let agent in saleCounter) {
+        if (saleCounter[agent] > currMax) {
+            topAgent = agent;
+            currMax = saleCounter[agent];
+        } else if (saleCounter[agent] >= currMax) {
+            currMax += ` and ${key}`;
+        }
+    }
+
+    // Create HTML representation and add it to the DOM
+    const topAgentHTML = createHTML('Top Agent', topAgent);
+    renderHTML(reportContainer, topAgentHTML);
+});
+
