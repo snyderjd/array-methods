@@ -32,8 +32,8 @@ const reportContainer = document.querySelector('.report__container');
 
 // Calculate total gross profit for 2017 and add it to the DOM
 getSalesData().then(parsedSales => {
-
-    const grossProfits = parsedSales.map(sale => {
+    const sales2017 = parsedSales.filter(sale => sale.purchase_date.includes('2017'));
+    const grossProfits = sales2017.map(sale => {
         return sale.gross_profit;
     });
     
@@ -133,13 +133,11 @@ getSalesData().then(parsedSales => {
 // Figure out which salesperson made the most profit
 getSalesData().then(parsedSales => {
     const sales2017 = parsedSales.filter(sale => sale.purchase_date.includes('2017'));
-
     const agentProfits = {};
 
     // Loop through the sales to create an object key for each salesperson and set equal to 0
     sales2017.forEach(sale => {
         const agent = `${sale.sales_agent.first_name} ${sale.sales_agent.last_name}`;
-
         agentProfits[agent] = 0;
     });
 
@@ -148,8 +146,6 @@ getSalesData().then(parsedSales => {
         const agent = `${sale.sales_agent.first_name} ${sale.sales_agent.last_name}`;
         agentProfits[agent] += sale.gross_profit;
     });
-
-    // console.log(agentProfits);
 
     // Iterate through the object and get the max value
     let mostProfitable = '';
@@ -172,16 +168,13 @@ getSalesData().then(parsedSales => {
 // Find the most popular model and add it to the DOM
 getSalesData().then(parsedSales => {
     const sales2017 = parsedSales.filter(sale => sale.purchase_date.includes('2017'));
-
-    const models = {}
+    const models = {};
 
     // Loop through the sales to create an object for each model and set to 0
     sales2017.forEach(sale => models[sale.vehicle.model] = 0);
 
     // Loop through the sales and increment the model counter for each sale
     sales2017.forEach(sale => models[sale.vehicle.model] += 1);
-
-    console.log(models);
 
     // Iterate through the object and get the max value
     let mostPopular = '';
@@ -198,7 +191,36 @@ getSalesData().then(parsedSales => {
 
     // Create HTML representation and add it to the DOM
     const mostPopularHTML = createHTML('Most Popular Model', mostPopular);
-    renderHTML(reportContainer, mostPopularHTML); 
-
+    renderHTML(reportContainer, mostPopularHTML);
 });
+
+// Find out which bank provided the most loans and add it to the DOM
+getSalesData().then(parsedSales => {
+    const sales2017 = parsedSales.filter(sale => sale.purchase_date.includes('2017'));
+    bankLoans = {};
+
+    // Loop through the sales and make a key for each bank in the bankLoans object
+    sales2017.forEach(sale => bankLoans[sale.credit.credit_provider] = 0);
+
+    // Loop through the sales and increment the counter for each bank loan made by a lender
+    sales2017.forEach(sale => bankLoans[sale.credit.credit_provider] += 1);
+
+    // Iterate through the bank loans object and get the max value
+    let mostPopular = '';
+    let currMax = 0;
+
+    for (let bank in bankLoans) {
+        if (bankLoans[bank] > currMax) {
+            mostPopular = bank;
+            currMax = bankLoans[bank];
+        } else if (bankLoans[bank] === currMax) {
+            mostPopular += ` and ${bank}`;
+        }
+    }
+
+    // Create HTML representation and add it to the DOM
+    const mostPopularHTML = createHTML('Most Popular Lender', mostPopular);
+    renderHTML(reportContainer, mostPopularHTML);
+});
+
 
