@@ -134,8 +134,6 @@ getSalesData().then(parsedSales => {
 getSalesData().then(parsedSales => {
     const sales2017 = parsedSales.filter(sale => sale.purchase_date.includes('2017'));
 
-    console.log(sales2017);
-
     const agentProfits = {};
 
     // Loop through the sales to create an object key for each salesperson and set equal to 0
@@ -151,7 +149,7 @@ getSalesData().then(parsedSales => {
         agentProfits[agent] += sale.gross_profit;
     });
 
-    console.log(agentProfits);
+    // console.log(agentProfits);
 
     // Iterate through the object and get the max value
     let mostProfitable = '';
@@ -162,12 +160,45 @@ getSalesData().then(parsedSales => {
             mostProfitable = agent;
             currMax = agentProfits[agent];
         } else if (agentProfits[agent] >= currMax) {
-            currMax += ` and ${key}`;
+            currMax += ` and ${agent}`;
         }
     }
 
     // Create HTML representation and add it to the DOM
     const mostProfitsHTML = createHTML('Most Profitable Agent', mostProfitable);
     renderHTML(reportContainer, mostProfitsHTML);    
+});
+
+// Find the most popular model and add it to the DOM
+getSalesData().then(parsedSales => {
+    const sales2017 = parsedSales.filter(sale => sale.purchase_date.includes('2017'));
+
+    const models = {}
+
+    // Loop through the sales to create an object for each model and set to 0
+    sales2017.forEach(sale => models[sale.vehicle.model] = 0);
+
+    // Loop through the sales and increment the model counter for each sale
+    sales2017.forEach(sale => models[sale.vehicle.model] += 1);
+
+    console.log(models);
+
+    // Iterate through the object and get the max value
+    let mostPopular = '';
+    let currMax = 0;
+
+    for (let model in models) {
+        if (models[model] > currMax) {
+            mostPopular = model;
+            currMax = models[model];
+        } else if (models[model] === currMax) {
+            mostPopular += ` and ${model}`;
+        }
+    }
+
+    // Create HTML representation and add it to the DOM
+    const mostPopularHTML = createHTML('Most Popular Model', mostPopular);
+    renderHTML(reportContainer, mostPopularHTML); 
+
 });
 
